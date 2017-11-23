@@ -2,55 +2,98 @@
 #-*- coding:utf-8 -*-
 
 from flask import Flask, flash, redirect, render_template, \
-     request, url_for
-import os
+	 request, url_for
 
+import os
+import datetime
+
+#######################################
 import parse_form
-import 
+import view
+#######################################
 
 app = Flask(__name__)
 
+#######################################
+## Paginas estaticas
 @app.route('/')
-def index():
+def render_index():
 	"""
 	Renderiza o index, quando o endpoint for o diretorio raiz
 	"""
-	out = 
-    return render_template('index.html', out)
+	out = datetime.datetime.now()
+	return render_template('index.html', out)
 
-@app.route("/lista")
-def lista():
+@app.route("/hist")
+def render_historia():
 	"""
-	renderiza os forms da pagina lista
+	renderiza a pagina de historia do projeto
 	"""
-	out =
-    return render_template('list.html', out)
+	return render_template('historia.html')
 
-@app.route("/modglob")
-def modglob():
+@app.route("/desc")
+def render_descricao():
 	"""
-	renderiza os forms da pagina de modelos globais
+	renderiza a descricao dos elementos
 	"""
-	out =
-    return render_template('modglob.html', out)
+	return render_template('descricao.html')
 
-@app.route("/lista/l_form" , methods=['GET', 'POST'])
-def l_form():
+@app.route("/cont")
+def render_contato():
 	"""
-	endpoind para o form das listas
+	renderiza o form de contato
 	"""
-    select = request.form.get('comp_select')  #recebe os dados do select
-    out =
-    return render_template('file_list.html', out)
+	return render_template('contato.html')
 
-@app.route("/modglog/m_form" , methods=['GET', 'POST'])
-def m_form():
+@app.route("/busca/model")
+def search_model():
 	"""
-	endpoint para o form dos modelos globais 
+	renderiza os forms de busca por modelo
 	"""
-    select = request.form.get('comp_select') #recebe os dados do select
-    out =
-    return render_template('file_list.html', out) 
+	return render_template('busca_modelo.html')
 
+@app.route("/busca/data")
+def search_data():
+	"""
+	renderiza os forms de busca por data
+	"""
+	return render_template('busca_data.html')
+
+#######################################
+## Forms
+@app.route("/form/cont" , methods=['GET', 'POST'])
+def recv_contato
+	"""
+	endpoint para o form de contato 
+	"""
+	select = request.form.getlist('FORM___NAME____')  #recebe os dados do form, precisa de nome e valor no html
+	out = parse_form.contato(select)
+	out = view.contato(out)
+	return render_template('lista.html', out)
+
+@app.route("/form/model" , methods=['GET', 'POST'])
+def recv_modelo():
+	"""
+	endpoint para o form de busca por modelo
+	"""
+	select = request.form.get('comp_select') #recebe os dados do select
+	radio = request.form.getlist('comp_radio') #recebe os dados do radio ##precisam ser definidos no html
+	out = parse_form.modelo(select)
+	out = view.modelo(out)
+	return render_template('file_list.html', out) 
+
+
+@app.route("/form/data", methods=['GET', 'POST']):
+def recv_data():
+	"""
+	endpoint para o form de busca por data
+	"""
+	select = request.form.get('comp_select') #recebe os dados do select
+	out = parse_form.data(select)
+	out = view.modelo(out)
+	return render_template('descricao_modelos.hmtl')
+
+#######################################
+## Execucao
 if __name__=='__main__':
-    app.run(debug=True)
+	app.run(debug=True)
