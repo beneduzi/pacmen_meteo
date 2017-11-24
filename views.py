@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
-from flask import Flask, flash, redirect, render_template, \
-	 request, url_for
+from flask import flash, redirect, render_template, request, url_for
+# from .forms import LoginForm
+from app import app
 
 import os
 import datetime
 
 #######################################
 import parse_form
-import view
-#######################################
-
-app = Flask(__name__)
-
+import model
+# import login
 #######################################
 ## Paginas estaticas
 @app.route('/')
@@ -66,9 +64,9 @@ def recv_contato
 	"""
 	endpoint para o form de contato 
 	"""
-	select = request.form.getlist('FORM___NAME____')  #recebe os dados do form, precisa de nome e valor no html
+	select = request.form.get_dict('FORM___NAME____')  #recebe os dados do form, precisa de nome e valor no html
 	out = parse_form.contato(select)
-	out = view.contato(out)
+	out = model.contato(out)
 	return render_template('lista.html', out)
 
 @app.route("/form/model" , methods=['GET', 'POST'])
@@ -76,10 +74,9 @@ def recv_modelo():
 	"""
 	endpoint para o form de busca por modelo
 	"""
-	select = request.form.get('comp_select') #recebe os dados do select
-	radio = request.form.getlist('comp_radio') #recebe os dados do radio ##precisam ser definidos no html
+	select = request.form.get_dict('comp_select') #recebe os dados do select
 	out = parse_form.modelo(select)
-	out = view.modelo(out)
+	out = model.modelo(out)
 	return render_template('file_list.html', out) 
 
 
@@ -88,12 +85,21 @@ def recv_data():
 	"""
 	endpoint para o form de busca por data
 	"""
-	select = request.form.get('comp_select') #recebe os dados do select
+	select = request.form.get_dict('comp_select') #recebe os dados do select
 	out = parse_form.data(select)
-	out = view.modelo(out)
+	out = model.modelo(out)
 	return render_template('descricao_modelos.hmtl')
 
-#######################################
-## Execucao
-if __name__=='__main__':
-	app.run(debug=True)
+# @app.route('/form/login', methods=['GET', 'POST'])
+# def login():
+#     out = login.LoginForm()
+#     if form.validate_on_submit():
+#         # flash('Login requested for OpenID="%s", remember_me=%s' %
+#         #       (form.openid.data, str(form.remember_me.data)))
+#         return redirect('/index')
+#     return render_template('login.html', form=out)
+
+# #######################################
+# ## Execucao
+# if __name__=='__main__':
+# 	app.run(debug=True)
