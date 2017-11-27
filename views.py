@@ -20,7 +20,7 @@ def render_index():
 	Renderiza o index, quando o endpoint for o diretorio raiz
 	"""
 	out = datetime.datetime.now()
-	return render_template('index.html', out)
+	return render_template('index.html', out=out)
 
 @app.route("/hist")
 def render_historia():
@@ -66,8 +66,11 @@ def recv_contato
 	"""
 	select = request.form.get_dict('FORM___NAME____')  #recebe os dados do form, precisa de nome e valor no html
 	out = parse_form.contato(select)
-	out = model.contato(out)
-	return render_template('lista.html', out)
+	success = model.contato(out[])
+	if success == True:
+		return render_template('email_sended.html')
+	else:
+		return render_template('email_fail.html')
 
 @app.route("/form/model" , methods=['GET', 'POST'])
 def recv_modelo():
@@ -76,9 +79,11 @@ def recv_modelo():
 	"""
 	select = request.form.get_dict('comp_select') #recebe os dados do select
 	out = parse_form.modelo(select)
-	out = model.modelo(out)
-	return render_template('file_list.html', out) 
-
+	success, f_path, f_id = model.modelo(out[])
+	if success == True:
+		return render_template('file_list.html', _path_=f_path, _id_=f_id) 
+	else:
+		return render_template('file_fail.html')
 
 @app.route("/form/data", methods=['GET', 'POST']):
 def recv_data():
@@ -87,8 +92,53 @@ def recv_data():
 	"""
 	select = request.form.get_dict('comp_select') #recebe os dados do select
 	out = parse_form.data(select)
-	out = model.modelo(out)
-	return render_template('descricao_modelos.hmtl')
+	success, f_path, f_id = model.data(out[])
+	if success == True:
+		return render_template('file_list.html', _path_=f_path, _id_=f_id) 
+	else:
+		return render_template('file_fail.html')
+#######################################
+## Descricoes dos elementos
+@app.route("/desc/model")
+def des_modelos():
+	success, out = model.descricao("modelo")
+	if success == True:
+		return render_template('desc_element.html', out=out)
+	else:
+		return render_template('desc_fail.html')
+
+@app.route("/desc/cenario")
+def des_cenarios():
+	success, out = model.descricao("cenarios")
+	if success == True:
+		return render_template('desc_element.html', out=out)
+	else:
+		return render_template('desc_fail.html')
+
+@app.route("/desc/membros")
+def desc_membros():
+	success, out = model.descricao("membros")
+	if success == True:
+		return render_template('desc_element.html', out=out)
+	else:
+		return render_template('desc_fail.html')
+
+@app.route("/desc/periodos")
+def desc_periodos():
+	success, out = model.descricao("periodo")
+	if success == True:
+		return render_template('desc_element.html', out=out)
+	else:
+		return render_template('desc_fail.html')
+
+@app.route("/desc/all")
+def desc_all():
+	success, out = model.descricao()
+	if success == True:
+		return render_template('desc_element.html', out=out)
+	else:
+		return render_template('desc_fail.html')
+
 
 # @app.route('/form/login', methods=['GET', 'POST'])
 # def login():
