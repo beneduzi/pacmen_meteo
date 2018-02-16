@@ -33,8 +33,8 @@ def _pull_date_data(_start='*', _end='*', lat, lon):
 
 #######################################
 ##Buscas nas tabelas primarias
-def _get_modelos():
-    try:
+def _get_modelos() 
+   try:
         db = MySQLdb.connect("localhost","root","&i1hm","pacmen_db" )
         cursor = db.cursor()
         query = 'SELECT name, pt_desc FROM modelos_tb'
