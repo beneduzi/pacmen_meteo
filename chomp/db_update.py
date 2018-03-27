@@ -20,10 +20,17 @@ class element_model(object):
         self.longitude = []
         self.cre_date = []
         self.sim_date = []
+        self.type = []
 
 
 def create_model(modelo, cursor):
     insert_query = 'INSERT INTO modelos_tb (name) VALUES ("%s")' % (modelo)
+    cursor.execute(insert_query)
+    cursor.fetchall()
+
+
+def create_type(tipo, cursor):
+    insert_query = 'INSERT INTO tipo_tb (name) VALUES ("%s")' % (tipo)
     cursor.execute(insert_query)
     cursor.fetchall()
 
@@ -47,14 +54,14 @@ def create_project(projeto, cursor):
 
 
 def create_lat(lat, cursor):
-    insert_query = 'INSERT INTO latitudes_tb (max, min) VALUES ("%s", "%s")' % (lat[
+    insert_query = 'INSERT INTO latitudes_tb (min, max) VALUES ("%s", "%s")' % (lat[
         0], lat[1])
     cursor.execute(insert_query)
     cursor.fetchall()
 
 
 def create_lon(lon, cursor):
-    insert_query = 'INSERT INTO longitudes_tb (max, min) VALUES ("%s", "%s")' % (lon[
+    insert_query = 'INSERT INTO longitudes_tb (min, max) VALUES ("%s", "%s")' % (lon[
         0], lon[1])
     cursor.execute(insert_query)
     cursor.fetchall()
@@ -74,7 +81,22 @@ def create_simulation_dates(simul_date, cursor):
     cursor.fetchall()
 
 
-def _push_model_data(nome, modelo, membro, periodo, projeto, lat, lon, criacao, datas):
+def invalid_file(file_path):
+    db = MySQLdb.connect("localhost", "root", "a", "pacmen_db")
+    cursor = db.cursor()
+    query_invalid = 'SELECT id FROM invalid_tb WHERE path="%s"' % (file_path)
+    cursor.execute(query_invalid)
+    id_invalid = cursor.fetchall()
+    if id_invalid == ():
+        insert_query = 'INSERT INTO invalid_tb (path) VALUES ("%s")' % (
+            file_path)
+        cursor.execute(insert_query)
+        cursor.fetchall()
+        db.commit()
+    db.close()
+
+
+def _push_model_data(nome, tipo, modelo, membro, periodo, projeto, lat, lon, criacao, datas):
     db = MySQLdb.connect("localhost", "root", "a", "pacmen_db")
     cursor = db.cursor()
 
@@ -83,17 +105,22 @@ def _push_model_data(nome, modelo, membro, periodo, projeto, lat, lon, criacao, 
     id_model = cursor.fetchall()
     if id_model == ():
         create_model(modelo, cursor)
-        query_model = 'SELECT id FROM modelos_tb  WHERE modelos_tb.name= "%s"' % (
-            modelo)
         cursor.execute(query_model)
-        id_model = cursor.fetchall()[0][0]
+        id_model = cursor.fetchall()
+
+    query_type = 'SELECT id FROM tipo_tb WHERE name="%s"' % (tipo)
+    cursor.execute(query_type)
+    id_type = cursor.fetchall()
+    if id_type == ():
+        create_type(tipo, cursor)
+        cursor.execute(query_model)
+        id_type = cursor.fetchall()
 
     query_member = 'SELECT id FROM membros_tb  WHERE name= "%s"' % (membro)
     cursor.execute(query_member)
     id_member = cursor.fetchall()
     if id_member == ():
         create_member(membro, cursor)
-        query_member = 'SELECT id FROM membros_tb  WHERE name= "%s"' % (membro)
         cursor.execute(query_member)
         id_member = cursor.fetchall()
 
@@ -102,8 +129,6 @@ def _push_model_data(nome, modelo, membro, periodo, projeto, lat, lon, criacao, 
     id_period = cursor.fetchall()
     if id_period == ():
         create_period(periodo, cursor)
-        query_period = 'SELECT id FROM periodos_tb  WHERE name= "%s"' % (
-            periodo)
         cursor.execute(query_period)
         id_period = cursor.fetchall()
 
@@ -112,12 +137,10 @@ def _push_model_data(nome, modelo, membro, periodo, projeto, lat, lon, criacao, 
     id_project = cursor.fetchall()
     if id_project == ():
         create_project(projeto, cursor)
-        query_project = 'SELECT id FROM projetos_tb  WHERE name= "%s"' % (
-            projeto)
         cursor.execute(query_project)
         id_project = cursor.fetchall()
 
-    query_latitude = 'SELECT id FROM latitudes_tb WHERE max="%s" and min="%s"' % (lat[
+    query_latitude = 'SELECT id FROM latitudes_tb WHERE min="%s" and max="%s"' % (lat[
                                                                                   0], lat[1])
     cursor.execute(query_latitude)
     id_latitude = cursor.fetchall()
@@ -126,7 +149,7 @@ def _push_model_data(nome, modelo, membro, periodo, projeto, lat, lon, criacao, 
         cursor.execute(query_latitude)
         id_latitude = cursor.fetchall()
 
-    query_longitude = 'SELECT id FROM longitudes_tb WHERE max="%s" and min="%s"' % (lon[
+    query_longitude = 'SELECT id FROM longitudes_tb WHERE min="%s" and max="%s"' % (lon[
                                                                                     0], lon[1])
     cursor.execute(query_longitude)
     id_longitude = cursor.fetchall()
@@ -158,13 +181,11 @@ def _push_model_data(nome, modelo, membro, periodo, projeto, lat, lon, criacao, 
     cursor.execute(verify_query)
     is_in = cursor.fetchall()
     if is_in == ():
-        insert_query = 'INSERT INTO dados_tb (name, periodo,  membro, modelo, projeto,\
+        insert_query = 'INSERT INTO dados_tb (name, periodo, tipo, membro, modelo, projeto,\
                                               lat, lon, creation_date, simulation_date)\
-                        VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")' \
-                        % (nome, id_period[0][0],  id_member[0][0], id_model[0][0], id_project[0][0],
+                        VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")' \
+                        % (nome, id_period[0][0], id_type[0][0], id_member[0][0], id_model[0][0], id_project[0][0],
                            id_latitude[0][0], id_longitude[0][0], id_creation[0][0], id_simulation[0][0])
-
-        print(insert_query)
         cursor.execute(insert_query, cursor)
         cursor.fetchall()
         db.commit()
@@ -189,15 +210,17 @@ out = element_model()
 for file_path in files:
     file = file_path.split('/')[-1]
     model = file_path.split('/')[-2]
-    period = file_path.split('/')[-3]
-    member = file_path.split('/')[-4]
-    project = file_path.split('/')[-5]
+    member = file_path.split('/')[-3]
+    stype = file_path.split('/')[-4]
+    period = file_path.split('/')[-5]
+    project = file_path.split('/')[-6]
 
     out.file.append(file)
     out.model.append(model)
     out.period.append(period)
     out.member.append(member)
     out.project.append(project)
+    out.type.append(stype)
     try:
         nc_file = netCDF4.Dataset(file_path, 'r')
         valid_nc = True
@@ -221,10 +244,11 @@ for file_path in files:
         del out.period[-1]
         del out.member[-1]
         del out.project[-1]
+
 num_new_files = 0
 for i in range(0, len(out.file)):
     try:
-        inserted = _push_model_data(out.file[i], out.model[i], out.member[i],
+        inserted = _push_model_data(out.file[i], out.type[i], out.model[i], out.member[i],
                                     out.period[i], out.project[
                                         i], out.latitude[i],
                                     out.longitude[i], out.cre_date[i], out.sim_date[i])
