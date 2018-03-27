@@ -1,0 +1,24 @@
+name: pacmen
+channels:
+- conda-forge
+- defaults
+dependencies:
+- basemap=1.*
+- curl=7.*
+- flask=0.*
+- hdf4=4.*
+- hdf5=1.*
+- matplotlib=2.*
+- netcdf4=1.*
+- numpy=1.*
+- pip=9.*
+- pyparsing=2.*
+- python=3.*
+- python-dateutil=2.*
+- pytz=2018.*
+- pyyaml=3.*
+- yaml=0.*
+- libgfortran=3.*
+- pip:
+  - backports.functools-lru-cache==1.*
+

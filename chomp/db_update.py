@@ -75,7 +75,6 @@ def create_simulation_dates(simul_date, cursor):
 
 
 def _push_model_data(nome, modelo, membro, periodo, projeto, lat, lon, criacao, datas):
-    # try:
     db = MySQLdb.connect("localhost", "root", "a", "pacmen_db")
     cursor = db.cursor()
 
@@ -145,35 +144,35 @@ def _push_model_data(nome, modelo, membro, periodo, projeto, lat, lon, criacao, 
         cursor.execute(query_creation)
         id_creation = cursor.fetchall()
 
-    query_simulation = 'SELECT id FROM simulation_date_tb WHERE start="%s" and steps="%s" and description="%s"' % (
-        datas[0], datas[1], datas[2])
+    query_simulation = 'SELECT id FROM simulation_date_tb WHERE start="%s" \
+        and steps="%s" and description="%s"' % (datas[0], datas[1], datas[2])
     cursor.execute(query_simulation)
     id_simulation = cursor.fetchall()
     if id_simulation == ():
         create_simulation_dates(datas, cursor)
         cursor.execute(query_simulation)
         id_simulation = cursor.fetchall()
+    db.commit()
 
     verify_query = 'SELECT id FROM dados_tb WHERE name="%s"' % (nome)
     cursor.execute(verify_query)
     is_in = cursor.fetchall()
-
     if is_in == ():
-        insert_query = 'INSERT INTO dados_tb (tipo, nome, membro, modelo, projeto, lat, lon, creation_date, simulation_date)\
-                            VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")' \
-                        % (id_period[0][0], nome, id_member[0][0], id_model[0][0], id_project[0][0],
+        insert_query = 'INSERT INTO dados_tb (name, periodo,  membro, modelo, projeto,\
+                                              lat, lon, creation_date, simulation_date)\
+                        VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")' \
+                        % (nome, id_period[0][0],  id_member[0][0], id_model[0][0], id_project[0][0],
                            id_latitude[0][0], id_longitude[0][0], id_creation[0][0], id_simulation[0][0])
 
         print(insert_query)
         cursor.execute(insert_query, cursor)
         cursor.fetchall()
+        db.commit()
         db.close()
         return (True)
     else:
         db.close()
         return (False)
-#    except:
-#        return ('Erro')
 
 # Arg parser
 parser = argparse.ArgumentParser(
@@ -186,6 +185,7 @@ files = [val for sublist in [[os.path.join(i[0], j)
                               for j in i[2]] for i in os.walk('./')] for val in sublist]
 files = [f for f in files if fnmatch.fnmatch(f, '*.nc')]
 out = element_model()
+
 for file_path in files:
     file = file_path.split('/')[-1]
     model = file_path.split('/')[-2]
@@ -223,12 +223,13 @@ for file_path in files:
         del out.project[-1]
 num_new_files = 0
 for i in range(0, len(out.file)):
-    inserted = _push_model_data(out.file[i], out.model[i], out.member[i],
-                                out.period[i], out.project[i], out.latitude[i], out.longitude[i], out.cre_date[i], out.sim_date[i])
-#    inserted = True
-#    print(out.file[i], out.model[i], out.member[i],\
-# out.period[i], out.project[i], out.latitude[i], out.longitude[i],
-# out.cre_date[i])
+    try:
+        inserted = _push_model_data(out.file[i], out.model[i], out.member[i],
+                                    out.period[i], out.project[
+                                        i], out.latitude[i],
+                                    out.longitude[i], out.cre_date[i], out.sim_date[i])
+    except:
+        inserted = 'Erro'
     if inserted == True:
         num_new_files += 1
     elif inserted == 'Erro':
