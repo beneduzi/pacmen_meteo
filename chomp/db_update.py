@@ -9,7 +9,10 @@ import fnmatch
 
 
 class element_model(object):
-
+    '''
+    Simple object to hold each 'model' characteristics and 
+    tranport then around the rest of the project.
+    '''
     def __init__(self):
         self.file = []
         self.model = []
@@ -82,6 +85,10 @@ def create_simulation_dates(simul_date, cursor):
 
 
 def invalid_file(file_path):
+    '''
+    Verify if an netCDF4 file is valid, if not insert it on a table,
+    wich will be used for garbage collection
+    '''
     db = MySQLdb.connect("localhost", "root", "a", "pacmen_db")
     cursor = db.cursor()
     query_invalid = 'SELECT id FROM invalid_tb WHERE path="%s"' % (file_path)
@@ -96,7 +103,12 @@ def invalid_file(file_path):
     db.close()
 
 
-def _push_model_data(nome, tipo, modelo, membro, periodo, projeto, lat, lon, criacao, datas):
+def _push_model_data(nome, tipo, modelo, membro, periodo,
+                     projeto, lat, lon, criacao, datas):
+    '''
+    Verify and insert if an item exists,if not, insert it into each table, 
+    as also colect all id's and insert then in to crrosiing table.
+    '''
     db = MySQLdb.connect("localhost", "root", "a", "pacmen_db")
     cursor = db.cursor()
 
@@ -195,9 +207,20 @@ def _push_model_data(nome, tipo, modelo, membro, periodo, projeto, lat, lon, cri
         db.close()
         return (False)
 
+'''
+Database
+    dados_tb -> results
+    latitudes_tb -> maximun domain latitudes, min dlatitudes
+    longitudes_tb -> max min longitudes
+    modelos_tb -> models names
+    tipo_tb -> initial conditions
+    periods_tb -> initial and final dates
+    membros_tb -> ensemble menbers
+All but latitudes_tb and longitudes_tb have descriptions both in portuguese and english.
+'''
 # Arg parser
 parser = argparse.ArgumentParser(
-    description="This script insert NetCDF4 files on the database")
+    description="This script insert NetCDF4 files on a database")
 parser.add_argument('-n', help="Imput NetCDF4 file",
                     action='store', required=True, dest='nc_path')
 args = parser.parse_args()

@@ -6,7 +6,6 @@ import numpy as np
 import datetime
 import argparse
 
-
 def cut_nc(nc_file, var, x0, x1, y0, y1):
     try:
         data = nc_file['var'][:, x0 - 1:x1 + 1, y0 - 1:y1 + 1]
@@ -108,6 +107,7 @@ def append_nc(nc_file, var, data):
 
 
 def run(files, lat0, lat1, lon0, lon1):
+#### parallels could be used here, process not thred
     for file in files:
         out_path = file.split('.')[-2] + '__CROP__.nc'
         in_file = netCDF4.Dataset(file, 'r')
