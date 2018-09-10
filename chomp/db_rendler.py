@@ -187,3 +187,15 @@ def _get_lat_lon(_lat, _lon):
         return (False, "Null")
 
 #######################################
+def _push_file(_file_path, _temp_path):
+    try:
+        db = MySQLdb.connect("localhost","root","&i1hm","pacmen_db" )
+        cursor = db.cursor()
+        query = '' #Query to insert into a new table date of creation, shelf life, file path
+        cursor.execute(query)
+        output = cursor.fetchall()
+        db.close()
+        return (True, output)
+    except:
+        return (False, "Null")
+    

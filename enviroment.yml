@@ -20,6 +20,8 @@ dependencies:
 - yaml=0.*
 - libgfortran=3.*
 - mysqlclient=1.*
+- pydap=3.*
 - pip:
   - backports.functools-lru-cache==1.*
   - python-apt
+  - Pydap[handlers.netcdf]
