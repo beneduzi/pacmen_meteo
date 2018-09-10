@@ -6,6 +6,7 @@ import numpy as np
 import datetime
 import argparse
 
+
 def cut_nc(nc_file, var, x0, x1, y0, y1):
     try:
         data = nc_file['var'][:, x0 - 1:x1 + 1, y0 - 1:y1 + 1]
@@ -107,7 +108,7 @@ def append_nc(nc_file, var, data):
 
 
 def run(files, lat0, lat1, lon0, lon1):
-#### parallels could be used here, process not thred
+    # parallels could be used here, process not thred
     for file in files:
         out_path = file.split('.')[-2] + '__CROP__.nc'
         in_file = netCDF4.Dataset(file, 'r')
@@ -121,3 +122,23 @@ def run(files, lat0, lat1, lon0, lon1):
                 out_file = append_nc(out_file, var, data)
         in_file.close()
         out_file.close()
+
+
+def crop_nc(in_path, out_path, lat0, lat1, lon0, lon1):
+    # parallels could be used here, process not thred
+    try:
+        in_file = netCDF4.Dataset(in_path, 'r')
+        x0, x1, y0, y1 = locate_lat_lon(in_file, lat0, lat1, lon0, lon1)
+        in_var, in_dim = list_vars_dimensions(in_file)
+        for i, var in enumarate(in_var, 0):
+            data = cut_nc(in_file, var, x0, x1, y0, y1)
+            if i == 0:
+                out_file = create_nc(out_path, in_dim, var, data)
+            else:
+                out_file = append_nc(out_file, var, data)
+        in_file.close()
+        out_file.close()
+        return True
+
+    except:
+        return False
