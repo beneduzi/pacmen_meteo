@@ -119,7 +119,7 @@ def _get_modelos():
     '''
     Each function returns every element in the respective table or Null(control flow)
     '''
-   try:
+    try:
         db = MySQLdb.connect("localhost", "root", "&i1hm", "pacmen_db")
         cursor = db.cursor()
         query = 'SELECT id, name, pt_desc FROM modelos_tb'
