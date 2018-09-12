@@ -14,7 +14,7 @@ def _pull_model_data(_model):
     try:
         db = MySQLdb.connect("0.0.0.0", "root", "a", "pacmen_db")
         cursor = db.cursor()
-        query = 'SELECT id, f_path FROM dados_tb WHERE modelo=%s' % (_model)
+        query = 'SELECT id, name FROM dados_tb WHERE modelo=%s' % (_model)
         cursor.execute(query)
         output = cursor.fetchall()
         # db.commit()
@@ -28,7 +28,7 @@ def _pull_period_data(_period):
     try:
         db = MySQLdb.connect("0.0.0.0", "root", "a", "pacmen_db")
         cursor = db.cursor()
-        query = 'SELECT id, f_path FROM dados_tb WHERE periodo=%s' % (
+        query = 'SELECT id, name FROM dados_tb WHERE periodo=%s' % (
             _period)
         cursor.execute(query)
         output = cursor.fetchall()
@@ -43,7 +43,7 @@ def _pull_member_data(_member):
     try:
         db = MySQLdb.connect("0.0.0.0", "root", "a", "pacmen_db")
         cursor = db.cursor()
-        query = 'SELECT id, f_path FROM dados_tb WHERE membro=%s' % (_member)
+        query = 'SELECT id, name FROM dados_tb WHERE membro=%s' % (_member)
         cursor.execute(query)
         output = cursor.fetchall()
         # db.commit()
@@ -57,7 +57,7 @@ def _pull_project_data(_project):
     try:
         db = MySQLdb.connect("0.0.0.0", "root", "a", "pacmen_db")
         cursor = db.cursor()
-        query = 'SELECT id, f_path FROM dados_tb WHERE projeto=%s' % (
+        query = 'SELECT id, name FROM dados_tb WHERE projeto=%s' % (
             _project)
         cursor.execute(query)
         output = cursor.fetchall()
@@ -72,7 +72,7 @@ def _pull_lat_lon_data(_lat, _lon):
     try:
         db = MySQLdb.connect("0.0.0.0", "root", "a", "pacmen_db")
         cursor = db.cursor()
-        query = 'SELECT id, f_path FROM dados_tb WHERE latitude=%s AND longitude=%s' % (
+        query = 'SELECT id, name FROM dados_tb WHERE latitude=%s AND longitude=%s' % (
             _lat, _lon)
         cursor.execute(query)
         output = cursor.fetchall()
@@ -87,7 +87,7 @@ def _pull_date_data(_start='*', _end='*'):
     try:
         db = MySQLdb.connect("0.0.0.0", "root", "a", "pacmen_db")
         cursor = db.cursor()
-        query = 'SELECT id, f_path FROM dados_tb WHERE s_date=%s AND e_date=%s ' % (
+        query = 'SELECT id, name FROM dados_tb WHERE s_date=%s AND e_date=%s ' % (
             _start, _end)
         cursor.execute(query)
         output = cursor.fetchall()
@@ -102,7 +102,7 @@ def _pull_file(_id):
     try:
         db = MySQLdb.connect("0.0.0.0", "root", "a", "pacmen_db")
         cursor = db.cursor()
-        query = 'SELECT f_path FROM dados_tb WHERE id=%i' % (_id)
+        query = 'SELECT name FROM dados_tb WHERE id=%i' % (_id)
         cursor.execute(query)
         output = cursor.fetchall()
         # db.commit()
