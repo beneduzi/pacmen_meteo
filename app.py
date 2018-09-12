@@ -55,7 +55,7 @@ def query_periods():
 
 @app.route('/projects', methods=['GET'])  # , 'POST'])
 def get_projects():
-    suc, ret = chomp.db_rendler._get_projects()
+    suc, ret = chomp.db_rendler._get_projetos()
     ret = professor.json_function._get_aux_DB(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
