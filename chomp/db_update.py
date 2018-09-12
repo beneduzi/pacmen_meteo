@@ -89,7 +89,7 @@ def invalid_file(file_path):
     Verify if an netCDF4 file is valid, if not insert it on a table,
     wich will be used for garbage collection
     '''
-    db = MySQLdb.connect("localhost", "root", "a", "pacmen_db")
+    db = MySQLdb.connect("0.0.0.0", "root", "a", "pacmen_db")
     cursor = db.cursor()
     query_invalid = 'SELECT id FROM invalid_tb WHERE path="%s"' % (file_path)
     cursor.execute(query_invalid)
@@ -109,7 +109,7 @@ def _push_model_data(nome, tipo, modelo, membro, periodo,
     Verify and insert if an item exists,if not, insert it into each table, 
     as also colect all id's and insert then in to crrosiing table.
     '''
-    db = MySQLdb.connect("localhost", "root", "a", "pacmen_db")
+    db = MySQLdb.connect("0.0.0.0", "root", "a", "pacmen_db")
     cursor = db.cursor()
 
     query_model = 'SELECT id FROM modelos_tb WHERE name="%s"' % (modelo)
