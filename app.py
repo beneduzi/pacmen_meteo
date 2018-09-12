@@ -142,9 +142,10 @@ def preview():
     return(app.response_class(response=out_str,
                               status=200, mimetype='text/html'))
 
+
 @app.route('/file/cut', methods=['GET'])  # , 'POST'])
 def cutter():
-    uniq = base64.b64encode(os.urandom(16)).decode('utf-8')             
+    uniq = base64.b64encode(os.urandom(16)).decode('utf-8')
     import professor.nc_croper
     if request.method == 'GET':
         _lat0 = float((request.args.get('latitude0')))
@@ -169,7 +170,7 @@ def cutter():
 @app.route('/file/transfer', methods=['GET'])  # , 'POST'])
 def transfer():
     from shutil import copyfile
-    uniq = base64.b64encode(os.urandom(16)).decode('utf-8')             
+    uniq = base64.b64encode(os.urandom(16)).decode('utf-8')
     if request.method == 'GET':
         is_valid, ret = chomp.db_rendler._pull_file(
             int(request.args.get('id')))
@@ -183,7 +184,7 @@ def transfer():
                               status=200, mimetype='application/json'))
 
 
-@app.route('/opendap') ####Need tp be validated
+@app.route('/opendap')  # Need tp be validated
 def opendap():
     return redirect("0.0.0.0:8080", code=302)
 
