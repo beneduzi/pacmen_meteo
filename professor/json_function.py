@@ -18,7 +18,7 @@ def _ret_files(_obj):
     for _ in _obj:
         entry = {
             "id": _[0],
-            "File path": _[1],
+            "File path": _[-1],
         }
         DIC.append(entry)
     return DIC
@@ -27,7 +27,7 @@ def _ret_files(_obj):
 def _ret_crop(_obj, _path, _la0, _lo0, _la1, _lo1):
     return({
         "id": _obj[0],
-        "Original path": _obj[1],
+        "Original path": _obj[-1],
         "OpenDAP path": _path,
         "latitude 0": _la0,
         "longitude 0": _lo0,
@@ -39,6 +39,6 @@ def _ret_crop(_obj, _path, _la0, _lo0, _la1, _lo1):
 def _ret_crop(_obj, _path):
     return({
         "id": _obj[0],
-        "Original path": _obj[1],
+        "Original path": _obj[-1],
         "OpenDAP path": _path,
     })
