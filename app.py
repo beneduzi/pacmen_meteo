@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 @app.route('/models', methods=['GET'])  # , 'POST'])
 def get_models():
-    ret = chomp.db_rendler._get_modelos()
+    suc, ret = chomp.db_rendler._get_modelos()
     ret = professor.json_function._get_aux_DB(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -27,7 +27,7 @@ def get_models():
 @app.route('/models/query', methods=['GET'])  # , 'POST'])
 def query_models():
     if request.method == 'GET':
-        ret = chomp.db_rendler._pull_model_data(int(request.args.get('id')))
+        suc, ret = chomp.db_rendler._pull_model_data(int(request.args.get('id')))
         ret = professor.json_function._ret_files(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -36,7 +36,7 @@ def query_models():
 
 @app.route('/periods', methods=['GET'])  # , 'POST'])
 def get_periods():
-    ret = chomp.db_rendler._get_periodos()
+    suc, ret = chomp.db_rendler._get_periodos()
     ret = professor.json_function._get_aux_DBs(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -46,7 +46,7 @@ def get_periods():
 @app.route('/periods/query', methods=['GET'])  # , 'POST'])
 def query_periods():
     if request.method == 'GET':
-        ret = chomp.db_rendler._pull_period_data(int(request.args.get('id')))
+        suc, ret = chomp.db_rendler._pull_period_data(int(request.args.get('id')))
         ret = professor.json_function._ret_files(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -55,7 +55,7 @@ def query_periods():
 
 @app.route('/projects', methods=['GET'])  # , 'POST'])
 def get_projects():
-    ret = chomp.db_rendler._get_projects()
+    suc, ret = chomp.db_rendler._get_projects()
     ret = professor.json_function._get_aux_DBs(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -65,7 +65,7 @@ def get_projects():
 @app.route('/projects/query', methods=['GET'])  # , 'POST'])
 def query_projects():
     if request.method == 'GET':
-        ret = chomp.db_rendler._pull_project_data(int(request.args.get('id')))
+        suc, ret = chomp.db_rendler._pull_project_data(int(request.args.get('id')))
         ret = professor.json_function._ret_files(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -74,7 +74,7 @@ def query_projects():
 
 @app.route('/members', methods=['GET'])  # , 'POST'])
 def get_mmembers():
-    ret = chomp.db_rendler._get_membros()
+    suc, ret = chomp.db_rendler._get_membros()
     ret = professor.json_function._get_aux_DB(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -84,7 +84,7 @@ def get_mmembers():
 @app.route('/members/query', methods=['GET'])  # , 'POST'])
 def query_members():
     if request.method == 'GET':
-        ret = chomp.db_rendler._pull_member_data(int(request.args.get('id')))
+        suc, ret = chomp.db_rendler._pull_member_data(int(request.args.get('id')))
         ret = professor.json_function._ret_files(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -98,7 +98,7 @@ def query_date():
             str(request.args.get('initi_date')), '%Y-%m-%d')   # iso date or NOT
         _dateF = datetime.datetime.strptime(
             str(request.args.get('final_date')), '%Y-%m-%d')
-        ret = chomp.db_rendler._pull_date_data(_dateI, _dateF)
+        suc, ret = chomp.db_rendler._pull_date_data(_dateI, _dateF)
         ret = professor.json_function._ret_files(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -110,9 +110,9 @@ def query_coords():
     if request.method == 'GET':
         _lat = float((request.args.get('latitude')))
         _lon = float((request.args.get('longitude')))
-        ret = chomp.db_rendler._get_lat_lon(_lat, _lon)
+        suc, ret = chomp.db_rendler._get_lat_lon(_lat, _lon)
         if ret[0]:
-            ret = chomp.db_rendler._pull_lat_lon_data(ret[1], ret[2])
+            suc, ret = chomp.db_rendler._pull_lat_lon_data(ret[1], ret[2])
             ret = professor.json_function._ret_files(ret)
     gc.collect()
     return(app.response_class(response=json.dumps(ret, default=str),
@@ -123,7 +123,7 @@ def query_coords():
 def preview():
     import professor.nc_ploter
     if request.method == 'GET':
-        is_valid, ret = chomp.db_rendler._pull_file(
+        is_valid, suc, ret = chomp.db_rendler._pull_file(
             int(request.args.get('id')))
         if is_valid:
             nc_vars, nc_file = professor.nc_vars(ret)
@@ -152,7 +152,7 @@ def cutter():
         _lon0 = float((request.args.get('longitude0')))
         _lat1 = float((request.args.get('latitude1')))
         _lon1 = float((request.args.get('longitude1')))
-        is_valid, ret = chomp.db_rendler._pull_file(
+        is_valid, suc, ret = chomp.db_rendler._pull_file(
             int(request.args.get('id')))
         if is_valid:
             out_path = '/path/to/opendap/' + \
@@ -172,7 +172,7 @@ def transfer():
     from shutil import copyfile
     uniq = base64.b64encode(os.urandom(16)).decode('utf-8')
     if request.method == 'GET':
-        is_valid, ret = chomp.db_rendler._pull_file(
+        is_valid, suc, ret = chomp.db_rendler._pull_file(
             int(request.args.get('id')))
         if is_valid:
             out_path = '/path/to/opendap/' + \
